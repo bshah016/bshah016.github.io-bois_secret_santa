@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secret Santa Generator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5f5;
+      margin: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    label {
+      font-size: 16px;
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    h2 {
+      color: #333;
+      margin-top: 20px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Secret Santa Generator</h1>
+    <label for="numberOfPeople">Number of People:</label>
+    <input type="number" id="numberOfPeople" min="2" required>
+    <button onclick="generateSecretSanta()">Generate Secret Santa</button>
+  </div>
+
+  <div id="nameInputs" style="display: none;">
+    <h2>Enter Names:</h2>
+    <div id="nameInputFields"></div>
+    <button onclick="generateAssignments()">Generate Assignments</button>
+  </div>
+
+  <div id="assignments" style="display: none;">
+    <h2>Assignments:</h2>
+    <ul id="assignmentsList"></ul>
+    <button onclick="reassign()">Reassign</button>
+    <button onclick="startOver()">Start Over</button>
+  </div>
+
+  <script>
+    let originalNames = [];
+
+    function generateSecretSanta() {
+      const numberOfPeople = document.getElementById('numberOfPeople').value;
+
+      // Validate input
+      if (numberOfPeople < 2) {
+        alert('Please enter at least 2 people.');
+        return;
+      }
+
+      const nameInputFields = document.getElementById('nameInputFields');
+      nameInputFields.innerHTML = '';
+
+      for (let i = 0; i < numberOfPeople; i++) {
+        const label = document.createElement('label');
+        label.textContent = `Name of person ${i + 1}:`;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = `person${i + 1}`;
+        input.required = true;
+
+        nameInputFields.appendChild(label);
+        nameInputFields.appendChild(input);
+      }
+
+      document.getElementById('nameInputs').style.display = 'block';
+      document.getElementById('assignments').style.display = 'none';
+    }
+
+    function generateAssignments() {
+      const numberOfPeople = document.getElementById('numberOfPeople').value;
+      const names = [];
+
+      for (let i = 0; i < numberOfPeople; i++) {
+        const nameInput = document.querySelector(`input[name="person${i + 1}"]`);
+        names.push(nameInput.value);
+      }
+
+      originalNames = names.slice(); // Save original names for reassignment
+
+      const shuffledNames = shuffleArray(names.slice());
+
+      const assignmentsList = document.getElementById('assignmentsList');
+      assignmentsList.innerHTML = '';
+
+      for (let i = 0; i < numberOfPeople; i++) {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${names[i]} is the Secret Santa for ${shuffledNames[i]}`;
+        assignmentsList.appendChild(listItem);
+      }
+
+      document.getElementById('nameInputs').style.display = 'none';
+      document.getElementById('assignments').style.display = 'block';
+    }
+
+    function reassign() {
+      const numberOfPeople = document.getElementById('numberOfPeople').value;
+      const shuffledNames = shuffleArray(originalNames.slice());
+
+      const assignmentsList = document.getElementById('assignmentsList');
+      assignmentsList.innerHTML = '';
+
+      for (let i = 0; i < numberOfPeople; i++) {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${originalNames[i]} is the Secret Santa for ${shuffledNames[i]}`;
+        assignmentsList.appendChild(listItem);
+      }
+    }
+
+    function startOver() {
+      document.getElementById('nameInputs').style.display = 'none';
+      document.getElementById('assignments').style.display = 'none';
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+  </script>
+</body>
+</html>
